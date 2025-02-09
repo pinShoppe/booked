@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PinShoppe - Booking</title>
     <style>
+        /* Existing styles */
         body {
             font-family: 'Times New Roman', serif;
             background-color: white;
@@ -119,67 +120,110 @@
         .modal a:hover {
             text-decoration: underline;
         }
+        #backButton {
+            background-color: #800000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #backButton:hover {
+            background-color: #5a0e0e;
+        }
     </style>
 </head>
 <body>
 <header>
     <h1>Pin Shoppe</h1>
-    <p>Make your mark, one pin at a time with PinShoppe</p>
+    <p>Make your mark, one pin at a time with pinShoppe</p>
 </header>
 <div class="container">
     <h2>Book Your Pins</h2>
     <form id="bookingForm">
         <label for="name">Full Name:</label>
         <input type="text" id="name" name="name" required>
+
         <label for="contact">Contact Number:</label>
         <input type="text" id="contact" name="contact" required>
+
         <label for="grade">Grade & Section:</label>
         <input type="text" id="grade" name="grade" required>
-        <label for="design">Choose a Design (1-20):</label>
-        <select id="design" name="design"></select>
+
+        <label for="customDesign">Upload Custom Design:</label>
+        <input type="file" id="customDesign" name="customDesign" accept="image/*" required>
+
         <label for="date">Preferred Date for Delivery:</label>
         <input type="date" id="date" name="date" required>
+
         <label for="time">Preferred Time for Delivery:</label>
         <input type="time" id="time" name="time" required>
+
         <input type="submit" value="Book Now">
     </form>
-    <a href="https://pinshoppe.github.io/bookinginfo/" class="tracker-btn">Track Your Booking</a>
+
+    <!-- Tracker Button -->
+    <a href="https://pinshoppe.github.io/bookinginfo/" class="tracker-btn">
+        Track Your Booking
+    </a>
 </div>
 <footer>
     <p>&copy; 2025 PinShoppe. All Rights Reserved.</p>
 </footer>
+
+<!-- Modal -->
 <div id="thankYouModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Thank you for booking!</h2>
         <p>Check your booking <a href="https://pinshoppe.github.io/bookinginfo/" target="_blank">here</a>.</p>
+        <button id="backButton">Back</button>
     </div>
 </div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let designDropdown = document.getElementById("design");
-        for (let i = 1; i <= 20; i++) {
-            let option = document.createElement("option");
-            option.value = i;
-            option.textContent = "Design " + i;
-            designDropdown.appendChild(option);
-        }
-    });
-    
     document.getElementById("bookingForm").addEventListener("submit", function(event) {
         event.preventDefault();
+
+        let formData = {
+            name: document.getElementById("name").value.trim(),
+            contact: document.getElementById("contact").value.trim(),
+            grade: document.getElementById("grade").value.trim(),
+            customDesign: document.getElementById("customDesign").files[0] ? URL.createObjectURL(document.getElementById("customDesign").files[0]) : null,
+            date: document.getElementById("date").value,
+            time: document.getElementById("time").value
+        };
+
+        if (!formData.name || !formData.contact || !formData.grade || !formData.date || !formData.time || !formData.customDesign) {
+            alert("Please fill in all required fields and upload a custom design.");
+            return;
+        }
+
+        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        bookings.push(formData);
+        localStorage.setItem("bookings", JSON.stringify(bookings));
+
+        // Show the modal
         let modal = document.getElementById("thankYouModal");
         modal.style.display = "block";
+
+        // Close the modal when the user clicks on <span> (x)
         document.querySelector(".close").onclick = function() {
             modal.style.display = "none";
         };
+
+        // Close the modal when the user clicks anywhere outside of the modal
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         };
-        
-        this.reset(); // Reset the form after submission
+    });
+
+    // Add back button functionality
+    document.getElementById("backButton").addEventListener("click", function() {
+        window.history.back();
     });
 </script>
 </body>
