@@ -151,8 +151,8 @@
         <label for="grade">Grade & Section:</label>
         <input type="text" id="grade" name="grade" required>
 
-        <label for="customDesign">Upload Custom Designs (up to 10):</label>
-        <input type="file" id="customDesign" name="customDesign" accept="image/*" multiple required>
+        <label for="customDesign">Upload Custom Design:</label>
+        <input type="file" id="customDesign" name="customDesign" accept="image/*" required>
 
         <label for="date">Preferred Date for Delivery:</label>
         <input type="date" id="date" name="date" required>
@@ -186,22 +186,16 @@
     document.getElementById("bookingForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
-        let fileInputs = document.getElementById("customDesign").files;
-        if (fileInputs.length > 10) {
-            alert("You can upload up to 10 files only.");
-            return;
-        }
-
         let formData = {
             name: document.getElementById("name").value.trim(),
             contact: document.getElementById("contact").value.trim(),
             grade: document.getElementById("grade").value.trim(),
-            customDesign: Array.from(fileInputs).map(file => URL.createObjectURL(file)),
+            customDesign: document.getElementById("customDesign").files[0] ? URL.createObjectURL(document.getElementById("customDesign").files[0]) : null,
             date: document.getElementById("date").value,
             time: document.getElementById("time").value
         };
 
-        if (!formData.name || !formData.contact || !formData.grade || !formData.date || !formData.time || formData.customDesign.length === 0) {
+        if (!formData.name || !formData.contact || !formData.grade || !formData.date || !formData.time || !formData.customDesign) {
             alert("Please fill in all required fields and upload a custom design.");
             return;
         }
